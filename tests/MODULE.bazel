@@ -1,0 +1,12 @@
+module(
+    name = "generate_export_header_tests",
+)
+
+bazel_dep(name = "generate_export_header")
+local_path_override(
+    module_name = "generate_export_header",
+    path = "../"
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "aspect_bazel_lib", version = "2.19.3")

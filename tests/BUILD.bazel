@@ -1,0 +1,52 @@
+load("@generate_export_header//:defs.bzl", "generate_export_header")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
+load("@aspect_bazel_lib//lib:testing.bzl", "assert_outputs")
+
+# Test that the generated default header (console_bridge_export.h) and
+# library name in export (CONSOLE_BRIDGE) matches.
+generate_export_header(
+    name = "console_bridge",
+)
+
+diff_test(
+    name = "export_header_test",
+    file1 = ":console_bridge",
+    file2 = "console_bridge.h",
+    failure_message = "Generated export header doesn't match!",
+    size = "small",
+)
+
+# Test that overrides the library name in the export header definition.
+generate_export_header(
+    name = "foo",
+    library = "foo",
+)
+
+diff_test(
+    name = "library_override_test",
+    file1 = ":foo",
+    file2 = "foo.h",
+    failure_message = "Generated export header doesn't match!",
+    size = "small",
+)
+
+# Test that overriding the generated file and library name both work.
+generate_export_header(
+    name = "header_file_export",
+    library = "CONSOLE_BRIDGE",
+    header = "header_export.h",
+)
+
+diff_test(
+    name = "header_file_export_test",
+    file1 = "header_file_export",
+    file2 = "export.h",
+    failure_message = "Generated export header doesn't match!",
+    size = "small",
+)
+
+assert_outputs(
+    name = "header_file_output_override_test",
+    actual = ":header_file_export",
+    expected = ["./header_export.h"],
+)
